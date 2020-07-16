@@ -55,6 +55,7 @@ resource "aws_cognito_user_pool" "main" {
     require_lowercase = true
     require_numbers   = true
     require_symbols   = false
+    temporary_password_validity_days = 7
   }
 
   sms_configuration {
