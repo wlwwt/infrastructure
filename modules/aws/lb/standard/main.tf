@@ -8,10 +8,11 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name     = "${var.name}-${var.environment}-${var.group_port}"
-  port     = var.group_port
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  name        = "${var.name}-${var.environment}-${var.group_port}"
+  port        = var.group_port
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = var.target_type
 
   dynamic "health_check" {
     for_each = [local.health_check]

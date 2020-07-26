@@ -56,3 +56,8 @@ variable "module_depends_on" {
   type    = any
   default = []
 }
+
+variable "target_type" {
+  type    = string
+  default = "instance"
+}
