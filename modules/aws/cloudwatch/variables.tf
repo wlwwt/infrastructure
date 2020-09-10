@@ -1,13 +1,13 @@
 variable "app_name" {
-  type    = string
+  type = string
 }
 
 variable "environment" {
-  type    = string
+  type = string
 }
 
 variable "resource" {
-  type    = string
+  type = string
 }
 
 variable "retention_in_days" {
