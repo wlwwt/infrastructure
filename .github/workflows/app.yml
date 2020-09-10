@@ -2,7 +2,7 @@ name: Deploy shared infrastucture
 
 on:
   push:
-    branches: [ epicatto/add-remote-execution ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
