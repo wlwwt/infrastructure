@@ -6,11 +6,14 @@ resource "aws_s3_bucket" "main" {
     enabled = var.versioning_enabled
   }
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = var.kms_master_key_arn
-        sse_algorithm     = var.sse_algorithm
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.encryption_enabled == false ? [] : [1]
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          kms_master_key_id = var.kms_master_key_arn
+          sse_algorithm     = var.sse_algorithm
+        }
       }
     }
   }

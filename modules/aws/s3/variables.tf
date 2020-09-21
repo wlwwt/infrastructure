@@ -17,6 +17,11 @@ variable "versioning_enabled" {
   default     = false
   description = "A state of versioning (keeping multiple variants of an object in the same bucket)"
 }
+variable "encryption_enabled" {
+  type        = bool
+  default     = false
+  description = "Bool to control if bucket encryption is enabled."
+}
 variable "sse_algorithm" {
   type        = string
   description = "The server-side encryption algorithm to use. Valid values are AES256 and aws:kms."
