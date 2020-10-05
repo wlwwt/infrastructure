@@ -37,30 +37,29 @@ resource "aws_cognito_user_pool" "main" {
 
   auto_verified_attributes = ["email"]
 
-  schema = [
-    {
-      attribute_data_type = "String"
-      name                = "email"
-      required            = true
-      mutable             = true
+  schema {
+    attribute_data_type = "String"
+    name                = "email"
+    required            = false
+    mutable             = true
 
-      string_attribute_constraints = {
-        min_length = 5
-        max_length = 300
-      }
-    },
-    {
-      attribute_data_type = "String"
-      name                = "id"
-      required            = true
-      mutable             = true
-
-      string_attribute_constraints = {
-        min_length = 36
-        max_length = 36
-      }
+    string_attribute_constraints {
+      min_length = 5
+      max_length = 300
     }
-  ]
+  }
+
+  schema {
+    attribute_data_type = "String"
+    name                = "id"
+    required            = false
+    mutable             = true
+
+    string_attribute_constraints {
+      min_length = 36
+      max_length = 36
+    }
+  }
 
   password_policy {
     minimum_length                   = 10
