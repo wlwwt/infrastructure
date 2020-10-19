@@ -114,6 +114,8 @@ resource "aws_cognito_user_group" "manager" {
 resource "aws_cognito_user_pool_client" "web" {
   name         = "${var.app_name}-${var.stage}-client-web"
   user_pool_id = aws_cognito_user_pool.main.id
+
+  read_attributes = ["custom:id"]
 }
 
 #######
