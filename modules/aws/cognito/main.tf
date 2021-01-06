@@ -118,6 +118,41 @@ resource "aws_cognito_user_pool_client" "web" {
   read_attributes = ["custom:id"]
 }
 
+# This client allow us to enable machine-to-machine authentication (client_credentials OAuth workflow)
+# https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
+# https://aws-blog.de/2020/01/machine-to-machine-authentication-with-cognito-and-serverless.html
+# https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
+
+//Uncomment to enable machine-to-machine authentication
+//resource "aws_cognito_user_pool_client" "api" {
+//  name         = "${var.app_name}-${var.stage}-client-api"
+//  user_pool_id = aws_cognito_user_pool.main.id
+//
+//  generate_secret                      = true
+//  allowed_oauth_flows_user_pool_client = true
+//  allowed_oauth_flows                  = ["client_credentials"]
+//  allowed_oauth_scopes                 = ["${var.app_name}_${var.stage}/API_ACCESS"]
+//}
+
+//Uncomment to enable machine-to-machine authentication
+//resource "aws_cognito_user_pool_domain" "main" {
+//  domain       = "${replace(var.app_name, "_", "-")}-${var.stage}"
+//  user_pool_id = aws_cognito_user_pool.main.id
+//}
+
+//Uncomment to enable machine-to-machine authentication
+//resource "aws_cognito_resource_server" "resource" {
+//  identifier = "${var.app_name}_${var.stage}"
+//  name       = "${var.app_name}_${var.stage}"
+//
+//  scope {
+//    scope_name        = "API_ACCESS"
+//    scope_description = "API access"
+//  }
+//
+//  user_pool_id = aws_cognito_user_pool.main.id
+//}
+
 #######
 # IAM #
 #######
