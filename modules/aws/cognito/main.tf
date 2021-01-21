@@ -177,6 +177,8 @@ resource "aws_cognito_user_pool_client" "web" {
   allowed_oauth_scopes                 = length(var.enabled_providers) > 0 ? ["email", "openid", "profile"] : null
   callback_urls                        = var.callback_urls
   logout_urls                          = var.logout_urls
+
+  depends_on = [aws_cognito_identity_provider.google, aws_cognito_identity_provider.facebook]
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
