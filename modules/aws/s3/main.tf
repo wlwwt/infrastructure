@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "main" {
   }
 
   tags = {
-    Project = var.app_name
-    Stage   = var.environment
+    Application = var.app_name
+    Environment = var.environment
   }
 }

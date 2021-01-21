@@ -10,7 +10,9 @@ resource "aws_security_group" "allow_all_from_intranet" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "All Inbound From Intranet (${local.vpc_name})"
+    Name        = "All Inbound From Intranet (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -31,7 +33,9 @@ resource "aws_security_group" "allow_from_intranet" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "Inbound ${each.key} From Intranet (${local.vpc_name})"
+    Name        = "Inbound ${each.key} From Intranet (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -58,7 +62,9 @@ resource "aws_security_group" "allow_all_to_intranet" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "All Inbound To Intranet (${local.vpc_name})"
+    Name        = "All Inbound To Intranet (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -79,7 +85,9 @@ resource "aws_security_group" "allow_to_intranet" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "Outbound ${each.key} To Intranet (${local.vpc_name})"
+    Name        = "Outbound ${each.key} To Intranet (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -119,7 +127,9 @@ resource "aws_security_group" "allow_from_everywhere" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "Inbound ${each.key} From Everywhere (${local.vpc_name})"
+    Name        = "Inbound ${each.key} From Everywhere (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -147,7 +157,9 @@ resource "aws_security_group" "allow_all_to_everywhere" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "Outbound All To Everywhere (${local.vpc_name})"
+    Name        = "Outbound All To Everywhere (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -172,7 +184,9 @@ resource "aws_security_group" "allow_to_everywhere" {
   vpc_id      = data.aws_vpc.main.id
 
   tags = {
-    Name = "Outbound ${each.key} To Everywhere (${local.vpc_name})"
+    Name        = "Outbound ${each.key} To Everywhere (${local.vpc_name})"
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 

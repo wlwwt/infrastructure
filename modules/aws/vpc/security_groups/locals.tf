@@ -1,8 +1,8 @@
 locals {
-  vpc_name             = "${var.vpc_name} ${upper(data.aws_region.current.name)}"
+  vpc_name             = "${var.vpc_id} ${upper(data.aws_region.current.name)}"
   intranet_cidr_blocks = length(var.intranet_cidr_blocks) > 0 ? var.intranet_cidr_blocks : [data.aws_vpc.main.cidr_block_associations[0].cidr_block]
 
-  groups = {
+  allowed_groups = {
     HTTP = {
       public = true
       ports  = [80, 443]
@@ -16,9 +16,12 @@ locals {
       ports = [3306]
     }
   }
-}
 
-locals {
+  groups = {
+    for k, v in local.allowed_groups :
+    k => v if contains(var.groups, k)
+  }
+
   group_ports = flatten([
     for name, def in local.groups : [
       for port in def.ports : {

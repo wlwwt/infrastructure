@@ -1,14 +1,19 @@
 resource "aws_lb" "main" {
-  name               = "${var.name}-${var.environment}"
+  name               = "${var.app_name}-${var.environment}"
   internal           = var.internal
   load_balancer_type = "application"
 
   security_groups = module.lb_security_groups.ids
   subnets         = var.subnet_ids
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_lb_target_group" "main" {
-  name        = "${var.name}-${var.environment}-${var.group_port}"
+  name        = "${var.app_name}-${var.environment}-${var.group_port}"
   port        = var.group_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id

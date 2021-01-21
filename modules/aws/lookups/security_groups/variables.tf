@@ -9,3 +9,7 @@ variable "module_depends_on" {
   type    = any
   default = []
 }
+
+variable "vpc_id" {
+  type = string
+}

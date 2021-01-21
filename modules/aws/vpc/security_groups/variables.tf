@@ -7,8 +7,14 @@ variable "intranet_cidr_blocks" {
   default = []
 }
 
-variable "vpc_name" {
-  type    = string
-  default = "default"
+variable "app_name" {
+  type = string
 }
 
+variable "environment" {
+  type = string
+}
+
+variable "groups" {
+  type = list(string)
+}
