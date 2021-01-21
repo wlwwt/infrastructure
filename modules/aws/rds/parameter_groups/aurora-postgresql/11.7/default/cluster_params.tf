@@ -2,7 +2,7 @@
 resource "aws_rds_cluster_parameter_group" "default" {
   name        = local.cluster_pg_name
   family      = "aurora-postgresql11"
-  description = "Aurora postgres11 cluster-level parameter group for ${var.cluster_name} cluster"
+  description = "Aurora postgres11 cluster-level parameter group for ${local.cluster_name} cluster"
 
   parameter {
     name  = "autovacuum"
@@ -33,5 +33,10 @@ resource "aws_rds_cluster_parameter_group" "default" {
     name         = "rds.logical_replication"
     value        = var.rds_logical_replication
     apply_method = "pending-reboot"
+  }
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
   }
 }

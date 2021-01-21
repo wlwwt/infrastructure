@@ -3,13 +3,18 @@
 #################
 
 resource "aws_cognito_identity_pool" "main" {
-  identity_pool_name               = "${var.app_name}_${var.stage}"
+  identity_pool_name               = "${var.app_name}-${var.environment}"
   allow_unauthenticated_identities = false
 
   cognito_identity_providers {
     client_id               = aws_cognito_user_pool_client.web.id
-    provider_name           = "cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.main.id}"
+    provider_name           = "cognito-idp.${data.aws_region.current.id}.amazonaws.com/${aws_cognito_user_pool.main.id}"
     server_side_token_check = false
+  }
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -22,12 +27,61 @@ resource "aws_cognito_identity_pool_roles_attachment" "main" {
   }
 }
 
+resource "aws_cognito_identity_provider" "google" {
+  count         = contains(var.enabled_providers, "Google") ? 1 : 0
+  user_pool_id  = aws_cognito_user_pool.main.id
+  provider_name = "Google"
+  provider_type = "Google"
+
+  provider_details = {
+    authorize_scopes = "profile email openid"
+    client_id        = var.google_client_id
+    client_secret    = var.google_client_secret
+
+    token_url                     = "https://www.googleapis.com/oauth2/v4/token"
+    token_request_method          = "POST"
+    oidc_issuer                   = "https://accounts.google.com"
+    authorize_url                 = "https://accounts.google.com/o/oauth2/v2/auth"
+    attributes_url                = "https://people.googleapis.com/v1/people/me?personFields="
+    attributes_url_add_attributes = "true"
+  }
+
+  attribute_mapping = {
+    email    = "email"
+    username = "sub"
+  }
+}
+
+resource "aws_cognito_identity_provider" "facebook" {
+  count         = contains(var.enabled_providers, "Facebook") ? 1 : 0
+  user_pool_id  = aws_cognito_user_pool.main.id
+  provider_name = "Facebook"
+  provider_type = "Facebook"
+
+  provider_details = {
+    authorize_scopes = "public_profile, email"
+    client_id        = var.facebook_client_id
+    client_secret    = var.facebook_client_secret
+
+    token_url                     = "https://graph.facebook.com/v6.0/oauth/access_token"
+    token_request_method          = "GET"
+    authorize_url                 = "https://www.facebook.com/v6.0/dialog/oauth"
+    attributes_url                = "https://graph.facebook.com/v6.0/me?fields="
+    attributes_url_add_attributes = "true"
+  }
+
+  attribute_mapping = {
+    email    = "email"
+    username = "id"
+  }
+}
+
 #############
 # User Pool #
 #############
 
 resource "aws_cognito_user_pool" "main" {
-  name = "${var.app_name}_${var.stage}"
+  name = "${var.app_name}-${var.environment}"
 
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
@@ -92,8 +146,8 @@ EOF
   }
 
   tags = {
-    Project = var.app_name
-    Stage   = var.stage
+    Application = var.app_name
+    Environment = var.environment
   }
 }
 
@@ -112,10 +166,22 @@ resource "aws_cognito_user_group" "manager" {
 ###########
 
 resource "aws_cognito_user_pool_client" "web" {
-  name         = "${var.app_name}-${var.stage}-client-web"
+  name         = "${var.app_name}-${var.environment}-client-web"
   user_pool_id = aws_cognito_user_pool.main.id
 
   read_attributes = ["custom:id"]
+
+  supported_identity_providers         = var.enabled_providers
+  allowed_oauth_flows_user_pool_client = length(var.enabled_providers) > 0
+  allowed_oauth_flows                  = length(var.enabled_providers) > 0 ? ["code"] : null
+  allowed_oauth_scopes                 = length(var.enabled_providers) > 0 ? ["email", "openid", "profile"] : null
+  callback_urls                        = var.callback_urls
+  logout_urls                          = var.logout_urls
+}
+
+resource "aws_cognito_user_pool_domain" "main" {
+  domain       = "${replace(var.app_name, "_", "-")}-${var.environment}"
+  user_pool_id = aws_cognito_user_pool.main.id
 }
 
 # This client allow us to enable machine-to-machine authentication (client_credentials OAuth workflow)
@@ -125,25 +191,20 @@ resource "aws_cognito_user_pool_client" "web" {
 
 //Uncomment to enable machine-to-machine authentication
 //resource "aws_cognito_user_pool_client" "api" {
-//  name         = "${var.app_name}-${var.stage}-client-api"
+//  name         = "${var.app_name}-${var.environment}-client-api"
 //  user_pool_id = aws_cognito_user_pool.main.id
 //
 //  generate_secret                      = true
 //  allowed_oauth_flows_user_pool_client = true
 //  allowed_oauth_flows                  = ["client_credentials"]
-//  allowed_oauth_scopes                 = ["${var.app_name}_${var.stage}/API_ACCESS"]
+//  allowed_oauth_scopes                 = ["${var.app_name}-${var.environment}/API_ACCESS"]
 //}
-
-//Uncomment to enable machine-to-machine authentication
-//resource "aws_cognito_user_pool_domain" "main" {
-//  domain       = "${replace(var.app_name, "_", "-")}-${var.stage}"
-//  user_pool_id = aws_cognito_user_pool.main.id
-//}
-
+//
+//
 //Uncomment to enable machine-to-machine authentication
 //resource "aws_cognito_resource_server" "resource" {
-//  identifier = "${var.app_name}_${var.stage}"
-//  name       = "${var.app_name}_${var.stage}"
+//  identifier = "${var.app_name}-${var.environment}"
+//  name       = "${var.app_name}-${var.environment}"
 //
 //  scope {
 //    scope_name        = "API_ACCESS"
@@ -158,7 +219,7 @@ resource "aws_cognito_user_pool_client" "web" {
 #######
 
 resource "aws_iam_role" "cognito_authenticated" {
-  name = "${var.app_name}-${var.stage}-cognito-authenticated"
+  name = "${var.app_name}-${var.environment}-cognito-authenticated"
 
   assume_role_policy = <<EOF
 {
@@ -182,14 +243,14 @@ resource "aws_iam_role" "cognito_authenticated" {
 EOF
 
   tags = {
-    Project = var.app_name
-    Stage   = var.stage
-    Service = "cognito"
+    Application = var.app_name
+    Environment = var.environment
+    Service     = "cognito"
   }
 }
 
 resource "aws_iam_role" "cognito_unauthenticated" {
-  name = "${var.app_name}-${var.stage}-cognito-unauthenticated"
+  name = "${var.app_name}-${var.environment}-cognito-unauthenticated"
 
   assume_role_policy = <<EOF
 {
@@ -213,14 +274,14 @@ resource "aws_iam_role" "cognito_unauthenticated" {
 EOF
 
   tags = {
-    Project = var.app_name
-    Stage   = var.stage
-    Service = "cognito"
+    Application = var.app_name
+    Environment = var.environment
+    Service     = "cognito"
   }
 }
 
 resource "aws_iam_role" "cognito_sns_role" {
-  name = "${var.app_name}-${var.stage}-cognito-sns-role"
+  name = "${var.app_name}-${var.environment}-cognito-sns-role"
 
   assume_role_policy = <<EOF
 {
@@ -242,15 +303,15 @@ resource "aws_iam_role" "cognito_sns_role" {
 EOF
 
   tags = {
-    Project = var.app_name
-    Stage   = var.stage
-    Service = "cognito"
+    Application = var.app_name
+    Environment = var.environment
+    Service     = "cognito"
   }
 }
 
 resource "aws_iam_policy" "cognito_sns_role" {
-  name        = "${var.app_name}-${var.stage}-cognito-sns-policy"
-  description = "${var.app_name}-${var.stage} Cognito allow SNS publish"
+  name        = "${var.app_name}-${var.environment}-cognito-sns-policy"
+  description = "${var.app_name}-${var.environment} Cognito allow SNS publish"
 
   policy = <<EOF
 {
@@ -269,7 +330,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "cognito_sns_role" {
-  name       = "${var.app_name}-${var.stage}-cognito-sns-role-policy"
+  name       = "${var.app_name}-${var.environment}-cognito-sns-role-policy"
   roles      = [aws_iam_role.cognito_sns_role.name]
   policy_arn = aws_iam_policy.cognito_sns_role.arn
 }

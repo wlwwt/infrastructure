@@ -1,7 +1,10 @@
 ## REQUIRED {
-variable "cluster_name" {
-  type        = string
-  description = "Cluster name"
+variable "app_name" {
+  type = string
+}
+
+variable "environment" {
+  type = string
 }
 
 variable "cluster_count" {
@@ -104,9 +107,4 @@ variable "auto_minor_version_upgrade" {
 variable "performance_insights_enabled" {
   description = "Specifies whether Performance Insights is enabled or not."
   default     = true
-}
-
-variable "tags" {
-  description = "A mapping of tags to assign to the instance"
-  default     = {}
 }

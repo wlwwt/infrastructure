@@ -2,7 +2,7 @@
 resource "aws_db_parameter_group" "default" {
   name        = local.instance_pg_name
   family      = "aurora-postgresql11"
-  description = "Aurora postgres11 instance-level parameter group for ${var.cluster_name} cluster"
+  description = "Aurora postgres11 instance-level parameter group for ${local.cluster_name} cluster"
 
   parameter {
     name  = "constraint_exclusion"
@@ -110,5 +110,10 @@ resource "aws_db_parameter_group" "default" {
   parameter {
     name  = "track_io_timing"
     value = var.track_io_timing
+  }
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
   }
 }

@@ -1,6 +1,10 @@
 ## REQUIRED {
-variable "cluster_name" {
-  description = "The name of DB cluster which will be using these parameter groups"
+variable "app_name" {
+  type = string
+}
+
+variable "environment" {
+  type = string
 }
 
 ## REQUIRED }

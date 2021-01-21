@@ -14,6 +14,12 @@ data "aws_iam_policy_document" "instance-assume-role" {
 resource "aws_iam_role" "ecsInstanceRole" {
   name               = "${var.app_name}-${var.environment}-ecsInstanceRole"
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role.json
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
+    Service     = "ecs"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecsInstanceRole" {
@@ -40,6 +46,12 @@ data "aws_iam_policy_document" "task-assume-role" {
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = "${var.app_name}-${var.environment}-ecsTaskExecutionRole"
   assume_role_policy = data.aws_iam_policy_document.task-assume-role.json
+
+  tags = {
+    Application = var.app_name
+    Environment = var.environment
+    Service     = "ecs"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole" {

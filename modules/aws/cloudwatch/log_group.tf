@@ -3,7 +3,7 @@ resource "aws_cloudwatch_log_group" "lg" {
   retention_in_days = var.retention_in_days
 
   tags = {
-    Project = var.app_name
-    Stage   = var.environment
+    Application = var.app_name
+    Environment = var.environment
   }
 }
