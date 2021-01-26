@@ -44,3 +44,23 @@ variable "logout_urls" {
   type    = list(string)
   default = []
 }
+
+variable "enable_mfa" {
+  type    = bool
+  default = true
+}
+
+variable "username_attributes" {
+  type    = list(string)
+  default = ["phone_number", "email"]
+}
+
+variable "user_groups" {
+  type    = set(string)
+  default = []
+}
+
+variable "post_confirmation_lambda_arn" {
+  type    = string
+  default = ""
+}
