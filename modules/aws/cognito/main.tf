@@ -89,8 +89,8 @@ resource "aws_cognito_user_pool" "main" {
     email_subject        = "${var.app_name} Verification Code"
     sms_message          = "${var.app_name}: Your verification code is {####}"
   }
-  mfa_configuration          = var.enable_mfa ? "ON" : "OFF"
-  auto_verified_attributes   = var.username_attributes
+  mfa_configuration        = var.enable_mfa ? "ON" : "OFF"
+  auto_verified_attributes = var.username_attributes
 
   dynamic "lambda_config" {
     for_each = var.post_confirmation_lambda_arn == "" ? [] : [1]
@@ -152,7 +152,7 @@ EOF
 ###############
 
 resource "aws_cognito_user_group" "manager" {
-  for_each     = var.user_groups
+  for_each = var.user_groups
 
   name         = each.key
   user_pool_id = aws_cognito_user_pool.main.id
