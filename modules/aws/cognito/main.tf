@@ -87,19 +87,15 @@ resource "aws_cognito_user_pool" "main" {
     default_email_option = "CONFIRM_WITH_CODE"
     email_message        = "${var.app_name}: Your verification code is {####}"
     email_subject        = "${var.app_name} Verification Code"
+    sms_message          = "${var.app_name}: Your verification code is {####}"
   }
+  mfa_configuration          = var.enable_mfa ? "ON" : "OFF"
+  auto_verified_attributes   = var.username_attributes
 
-  auto_verified_attributes = ["email"]
-
-  schema {
-    attribute_data_type = "String"
-    name                = "email"
-    required            = false
-    mutable             = true
-
-    string_attribute_constraints {
-      min_length = 5
-      max_length = 300
+  dynamic "lambda_config" {
+    for_each = var.post_confirmation_lambda_arn == "" ? [] : [1]
+    content {
+      post_confirmation = var.post_confirmation_lambda_arn
     }
   }
 
@@ -133,7 +129,7 @@ resource "aws_cognito_user_pool" "main" {
     allow_admin_create_user_only = false
 
     invite_message_template {
-      sms_message   = "${var.app_name} Invitation. USR: {username} PWD: {####} "
+      sms_message   = "${var.app_name} Invitation. USR: {username} Temp. PWD: {####} "
       email_subject = "${var.app_name} Invitation"
 
       email_message = <<EOF
@@ -156,9 +152,11 @@ EOF
 ###############
 
 resource "aws_cognito_user_group" "manager" {
-  name         = "manager"
+  for_each     = var.user_groups
+
+  name         = each.key
   user_pool_id = aws_cognito_user_pool.main.id
-  description  = "Permission to send worker notifications"
+  description  = "${each.key} group"
 }
 
 ###########
