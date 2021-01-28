@@ -1,5 +1,2 @@
-//module "security-groups" {
-//  source = "./modules/aws/vpc/security_groups"
-//
-//  vpc_id = var.vpc_id
-//}
+// Use to force apply execution
+resource "null_resource" "null" {}
