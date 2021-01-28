@@ -61,3 +61,8 @@ variable "target_type" {
   type    = string
   default = "instance"
 }
+
+variable "redirect_to_https" {
+  type    = bool
+  default = true
+}

@@ -10,7 +10,7 @@ variable "environment" {
 ## REQUIRED }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   description = "A mapping for tags to assign to parameter groups"
   default     = {}
 }
