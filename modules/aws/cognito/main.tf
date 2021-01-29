@@ -91,6 +91,22 @@ resource "aws_cognito_user_pool" "main" {
   }
   mfa_configuration        = var.enable_mfa ? "ON" : "OFF"
   auto_verified_attributes = var.username_attributes
+  username_attributes      = var.username_attributes
+
+  dynamic "software_token_mfa_configuration" {
+    for_each = var.enable_mfa && contains(var.mfa_methods, "TOTP") ? [1] : []
+    content {
+      enabled = true
+    }
+  }
+
+  dynamic "sms_configuration" {
+    for_each = var.enable_mfa && contains(var.mfa_methods, "SMS") ? [1] : []
+    content {
+      external_id    = var.cognito_role_external_id
+      sns_caller_arn = aws_iam_role.cognito_sns_role.arn
+    }
+  }
 
   dynamic "lambda_config" {
     for_each = var.post_confirmation_lambda_arn == "" ? [] : [1]
@@ -118,11 +134,6 @@ resource "aws_cognito_user_pool" "main" {
     require_numbers                  = true
     require_symbols                  = false
     temporary_password_validity_days = 7
-  }
-
-  sms_configuration {
-    external_id    = var.cognito_role_external_id
-    sns_caller_arn = aws_iam_role.cognito_sns_role.arn
   }
 
   admin_create_user_config {
