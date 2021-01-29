@@ -11,8 +11,8 @@ variable "cognito_role_external_id" {
 }
 
 variable "enabled_providers" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "The list of enabled providers to be included in the pool: 'Google' and/or 'Facebook'"
 
   validation {
@@ -24,50 +24,50 @@ variable "enabled_providers" {
 }
 
 variable "google_client_id" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "The Google client ID. Used only if enabled_providers contains 'Google'"
 }
 
 variable "google_client_secret" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "The Google client secret. Used only if enabled_providers contains 'Google'"
 }
 
 variable "facebook_client_id" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "The Facebook client ID. Used only if enabled_providers contains 'Facebook'"
 }
 
 variable "facebook_client_secret" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "The Facebook client secret. Used only if enabled_providers contains 'Facebook'"
 }
 
 variable "callback_urls" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "The enabled URLs where the user can be redirected after sign-in/signup with external providers. Used only if enabled_providers is not empty"
 }
 
 variable "logout_urls" {
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "The enabled URLs where the user can be redirected after logout with external providers. Used only if enabled_providers is not empty"
 }
 
 variable "enable_mfa" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
   description = "Enable MFA for all users in the pool. User must have a validated phone_number."
 }
 
 variable "mfa_methods" {
-  type    = list(string)
-  default = ["SMS", "TOTP"]
+  type        = list(string)
+  default     = ["SMS", "TOTP"]
   description = "Method to user for MFA. 'SMS' (text messages) or 'TOTP' (time-based one-time). Used only if enable_mfa is true"
 
   validation {
@@ -79,8 +79,8 @@ variable "mfa_methods" {
 }
 
 variable "username_attributes" {
-  type    = list(string)
-  default = ["phone_number", "email"]
+  type        = list(string)
+  default     = ["phone_number", "email"]
   description = "Attributes that a user can use as username."
 
   validation {
