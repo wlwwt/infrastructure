@@ -14,4 +14,6 @@ terraform {
   }
 }
 
-provider "aws" {}
+provider "aws" {
+  alias = "nexton-infrastructure"
+}
