@@ -12,6 +12,10 @@ locals {
       ports = [5432]
     }
 
+    MongoDB = {
+      ports = [27017]
+    }
+
     MySQL = {
       ports = [3306]
     }
